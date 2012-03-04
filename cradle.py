@@ -10,8 +10,8 @@ def GetChar():
 
 # Report an Error
 def Error(s):
-	WriteLn()
-	WriteLn('Error: ', s , '.')
+	print ''
+	print 'Error: ' + s + '.'
 
 # Report Error and Halt
 def Abort(s):
@@ -20,7 +20,7 @@ def Abort(s):
 
 # Report What Was Expected
 def Expected(s):
-	Abort(s, ' Expected')
+	Abort(s + ' Expected')
  
 # Match a Specific Input Character
 def Match(x):
@@ -73,8 +73,8 @@ def EmitLn(s):
 def Init():
 	GetChar()
 
-def main():
-	Init()
+#def main():
+#	Init()
 
-if __name__ == '__main__':
-	main()
+#if __name__ == '__main__':
+#	main()
