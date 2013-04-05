@@ -28,7 +28,7 @@ def Match(x):
     if look == x:
         GetChar()
     else:
-        Expected(''' + x + ''')
+        Expected("'%s'" % x)
 
 # Recognize an Alpha Character
 def IsAlpha(c):
