@@ -62,12 +62,12 @@ def GetNum():
 
 # Output a String with Tab
 def Emit(s):
-    print '\t' , s
+    print '\t' , s, # ending comma suppresses newline
 
 # Output a String with Tab and CRLF
 def EmitLn(s):
     Emit(s)
-    print '\n'
+    print  # print outputs newline by default
 
 # Initialize 
 def Init():
