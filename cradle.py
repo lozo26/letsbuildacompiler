@@ -1,80 +1,85 @@
-import sys
+class Cradle:
+    def __init__(self, inf, outf):
+        self.outf = outf
+        self.inf = inf
+        self.go = False
+        self.look = ''
 
-# Variable declarations
-look = '' # Lookahead character
+    def getChar(self):
+        '''Read new character from input stream'''
+        self.look = self.inf.read(1)
 
-# Read New Character From Input Stream
-def GetChar():
-    global look
-    look = sys.stdin.read(1)
+    def error(self, s):
+        '''Report an error'''
+        self.outf.write('\nError: %s.' % s)
+        
+    def abort(self, s):
+        '''Report an error and halt'''
+        self.error(s)
+        self.go = False
+        #sys.exit() # TODO: find a better way to do this
 
-# Report an Error
-def Error(s):
-    print ''
-    print 'Error: ' + s + '.'
+    def expected(self, s):
+        '''Report what was expected'''
+        self.abort(s + ' Expected')
 
-# Report Error and Halt
-def Abort(s):
-    Error(s)
-    sys.exit()
+    def match(self, x):
+        '''Match a specific input character'''
+        if self.look == x:
+            self.getChar()
+        else:
+            self.expected("'%s'" % x)
 
-# Report What Was Expected
-def Expected(s):
-    Abort(s + ' Expected')
+    def isAlpha(self, c):
+        '''Recognize an Alpha Character'''
+        return c.isalpha()
 
-# Match a Specific Input Character
-def Match(x):
-    global look
-    if look == x:
-        GetChar()
-    else:
-        Expected("'%s'" % x)
+    def isDigit(self, c):
+        '''Recognize a Decimal Digit'''
+        return c.isdigit()
 
-# Recognize an Alpha Character
-def IsAlpha(c):
-    return c.isalpha()
+    def getName(self):
+        '''Get an Identifier'''
+        val = 0
+        if not self.isAlpha(self.look):
+            self.expected('Name')
+        else:
+            val = self.look.upper()
+            self.getChar()
+            return val #? maybe not intented?
 
-# Recognize a Decimal Digit
-def IsDigit(c):
-    return c.isdigit()
+    def getNum(self):
+        '''Get a Number'''
+        val = 0
+        if not self.isDigit(self.look):
+            self.expected('Integer')
+        else:
+            val = self.look.upper()
+            self.getChar()
+            return val #? maybe not intented?
 
-# Get an Identifier
-def GetName():
-    val = 0
-    global look
-    if not IsAlpha(look):
-        Expected('Name')
-    else:
-        val = look.upper()
-        GetChar()
-        return val #? maybe not intented?
+    def emit(self, s):
+        '''Output a String with Tab'''
+        self.outf.write("\t%s" % s)
 
-# Get a Number
-def GetNum():
-    val = 0
-    global look
-    if not IsDigit(look):
-        Expected('Integer')
-    else:
-        val = look.upper()
-        GetChar()
-        return val #? maybe not intented?
+    def emitLn(self, s):
+        '''Output a String with Tab and LF'''
+        self.outf.write("\t%s\n" % s)
 
-# Output a String with Tab
-def Emit(s):
-    print '\t' , s, # ending comma suppresses newline
+    def start(self):
+        self.go = True
+        while self.go:
+            self.getChar()
 
-# Output a String with Tab and CRLF
-def EmitLn(s):
-    Emit(s)
-    print  # print outputs newline by default
 
-# Initialize 
-def Init():
-    GetChar()
 
-#def main():
-#	Init()
+def stdStreams():
+    import sys
+    c = Cradle(sys.stdin, sys.stdout)
+    #c.start()
 
-#if __name__ == '__main__':
-#	main()
+def main():
+    stdStreams()
+
+if __name__ == '__main__':
+	main()
