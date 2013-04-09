@@ -54,7 +54,7 @@ class Cradle:
         if not self.isDigit(self.look):
             self.expected('Integer')
         else:
-            val = self.look.upper()
+            val = self.look
             self.getChar()
             return val #? maybe not intented?
 
