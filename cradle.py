@@ -66,10 +66,17 @@ class Cradle:
         '''Output a String with Tab and LF'''
         self.outf.write("\t%s\n" % s)
 
+    def expression(self):
+        '''Parse and Translate a Math Expression'''
+        self.emitLn('MOV EAX, %s' % self.getNum())
+
     def start(self):
         self.go = True
-        while self.go:
+        """while self.go:
             self.getChar()
+            self.expression()"""
+        self.getChar()
+        self.expression()
 
 
 
