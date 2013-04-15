@@ -76,7 +76,7 @@ class Cradle:
 def stdStreams():
     import sys
     c = Cradle(sys.stdin, sys.stdout)
-    #c.start()
+    c.start()
 
 def main():
     stdStreams()
