@@ -17,7 +17,7 @@ class Cradle:
         '''Report an error and halt'''
         self.error(s)
         self.go = False
-        #sys.exit() # TODO: find a better way to do this
+        raise ValueError(s)
 
     def expected(self, s):
         '''Report what was expected'''
