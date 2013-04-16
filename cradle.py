@@ -66,33 +66,36 @@ class Cradle:
         '''Output a String with Tab and LF'''
         self.outf.write("\t%s\n" % s)
 
-    def term(self):
-        '''Parse and Translate a term'''
-        self.emitLn('MOV EAX, %s' % self.getNum())
-
     def expression(self):
         '''Parse and Translate an expression'''
-        self.term()
-        self.emitLn('PUSH EAX') # put eax ont top of stack
 
-        if self.look == '+':
-            self.add()
-        elif self.look == '-':
-            self.subtract()
-        else:
-            self.expected('Addop')
+        '''Python doesn't have switch/case.  Using a dictionary
+        of lambdas to simulate it.'''
+        case = {'+': lambda: self.add()
+               ,'-': lambda: self.subtract()
+               }
+        default = lambda: self.expected('Addop')
+
+        self.term()
+        while self.look in ('+', '-'):
+            self.emitLn('PUSH EAX       ;put eax on stack')
+            case.get(self.look, default)() # get() returns a lambda then the () invokes it
+
+    def term(self):
+        '''Parse and Translate a term'''
+        self.emitLn('MOV EAX, %s     ;eax = INT' % self.getNum())
 
     def add(self):
         self.match('+')
         self.term()
-        self.emitLn('POP EBX') # Pop top of stack to ebx (1st arg)
-        self.emitLn('ADD EBX, EAX') # ebx += eax
+        self.emitLn('POP EBX        ;retrieve arg from stack, store in ebx')
+        self.emitLn('ADD EBX, EAX   ;ebx += eax')
 
     def subtract(self):
         self.match('-')
         self.term()
-        self.emitLn('POP EBX') # Pop top of stack to ebx (1st arg)
-        self.emitLn('SUB EBX, EAX') # ebx -= eax
+        self.emitLn('POP EBX        ;retrieve arg from stack, store in ebx')
+        self.emitLn('SUB EBX, EAX   ;ebx -= eax')
 
     def start(self):
         self.go = True
