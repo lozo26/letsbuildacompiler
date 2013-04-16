@@ -65,6 +65,56 @@ class Cradle:
         '''Output a String with Tab and LF'''
         self.outf.write("\t%s\n" % s)
 
+    def factor(self):
+        '''Parse and Translate a factor'''
+        self.emitLn('MOV EAX, %s     ;eax = INT' % self.getNum())
+
+    def multiply(self):
+        '''Recognize and translate a multiply'''
+        self.match('*')
+        self.factor()
+        self.emitLn('MOV EBX, EAX   ;ebx = eax (ebx will hold 2nd factor)')
+        self.emitLn('POP EAX        ;retrieve 1st factor from stack, store in eax')
+        self.emitLn('IMUL EAX, EBX  ;eax *= ebx')
+
+    def divide(self):
+        '''Recognize and translate a divide'''
+        self.match('/')
+        self.factor()
+        self.emitLn('MOV EBX, EAX   ;ebx = eax (ebx will hold 2nd factor)')
+        self.emitLn('POP EAX        ;retrieve 1st factor from stack, store in eax')
+        self.emitLn('CDQ            ;Sign extend eax into edx')
+        self.emitLn('IDIV EBX       ;edx:eax / ebx, quotient in eax, rem in edx')
+
+    def term(self):
+        '''Parse and Translate a term'''
+
+        '''Python doesn't have switch/case.  Using a dictionary
+        of lambdas to simulate it.'''
+        case = {'*': lambda: self.multiply()
+               ,'/': lambda: self.divide()
+               }
+        default = lambda: self.expected('Mulop')
+
+        self.factor()
+        while self.look in ('*', '/'):
+            self.emitLn('PUSH EAX       ;put eax on stack (eax hold result of most recenlty computed factor)')
+            case.get(self.look, default)() # get() returns a lambda then the () invokes it
+
+    def add(self):
+        self.match('+')
+        self.term()
+        self.emitLn('MOV EBX, EAX   ;ebx = eax (ebx will hold 2nd term)')
+        self.emitLn('POP EAX        ;retrieve 1st term from stack, store in eax')
+        self.emitLn('ADD EAX, EBX   ;eax += ebx')
+
+    def subtract(self):
+        self.match('-')
+        self.term()
+        self.emitLn('MOV EBX, EAX   ;ebx = eax (ebx will hold 2nd term)')
+        self.emitLn('POP EAX        ;retrieve 1st term from stack, store in eax')
+        self.emitLn('SUB EAX, EBX   ;eax -= ebx')
+
     def expression(self):
         '''Parse and Translate an expression'''
 
@@ -77,26 +127,8 @@ class Cradle:
 
         self.term()
         while self.look in ('+', '-'):
-            self.emitLn('PUSH EAX       ;put eax on stack')
+            self.emitLn('PUSH EAX       ;put eax on stack (eax holds result of most recently computed term)')
             case.get(self.look, default)() # get() returns a lambda then the () invokes it
-
-    def term(self):
-        '''Parse and Translate a term'''
-        self.emitLn('MOV EAX, %s     ;eax = INT' % self.getNum())
-
-    def add(self):
-        self.match('+')
-        self.term()
-        self.emitLn('POP EBX        ;retrieve arg from stack, store in ebx')
-        self.emitLn('ADD EBX, EAX   ;ebx += eax')
-        self.emitLn('MOV EAX, EBX   ;eax = ebx (result expected to be in eax)')
-
-    def subtract(self):
-        self.match('-')
-        self.term()
-        self.emitLn('POP EBX        ;retrieve arg from stack, store in ebx')
-        self.emitLn('SUB EBX, EAX   ;ebx -= eax')
-        self.emitLn('MOV EAX, EBX   ;eax = ebx (result expected to be in eax)')
 
     def start(self):
         self.getChar()      # initialization
