@@ -90,12 +90,14 @@ class Cradle:
         self.term()
         self.emitLn('POP EBX        ;retrieve arg from stack, store in ebx')
         self.emitLn('ADD EBX, EAX   ;ebx += eax')
+        self.emitLn('MOV EAX, EBX   ;eax = ebx (result expected to be in eax)')
 
     def subtract(self):
         self.match('-')
         self.term()
         self.emitLn('POP EBX        ;retrieve arg from stack, store in ebx')
         self.emitLn('SUB EBX, EAX   ;ebx -= eax')
+        self.emitLn('MOV EAX, EBX   ;eax = ebx (result expected to be in eax)')
 
     def start(self):
         self.go = True
