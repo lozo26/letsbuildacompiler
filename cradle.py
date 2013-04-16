@@ -16,7 +16,6 @@ class Cradle:
     def abort(self, s):
         '''Report an error and halt'''
         self.error(s)
-        self.go = False
         raise ValueError(s)
 
     def expected(self, s):
@@ -100,12 +99,8 @@ class Cradle:
         self.emitLn('MOV EAX, EBX   ;eax = ebx (result expected to be in eax)')
 
     def start(self):
-        self.go = True
-        """while self.go:
-            self.getChar()
-            self.expression()"""
-        self.getChar()
-        self.expression()
+        self.getChar()      # initialization
+        self.expression()   # get it going
 
 
 
