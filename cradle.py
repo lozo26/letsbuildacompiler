@@ -66,9 +66,33 @@ class Cradle:
         '''Output a String with Tab and LF'''
         self.outf.write("\t%s\n" % s)
 
-    def expression(self):
-        '''Parse and Translate a Math Expression'''
+    def term(self):
+        '''Parse and Translate a term'''
         self.emitLn('MOV EAX, %s' % self.getNum())
+
+    def expression(self):
+        '''Parse and Translate an expression'''
+        self.term()
+        self.emitLn('PUSH EAX') # put eax ont top of stack
+
+        if self.look == '+':
+            self.add()
+        elif self.look == '-':
+            self.subtract()
+        else:
+            self.expected('Addop')
+
+    def add(self):
+        self.match('+')
+        self.term()
+        self.emitLn('POP EBX') # Pop top of stack to ebx (1st arg)
+        self.emitLn('ADD EBX, EAX') # ebx += eax
+
+    def subtract(self):
+        self.match('-')
+        self.term()
+        self.emitLn('POP EBX') # Pop top of stack to ebx (1st arg)
+        self.emitLn('SUB EBX, EAX') # ebx -= eax
 
     def start(self):
         self.go = True
