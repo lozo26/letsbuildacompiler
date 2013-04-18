@@ -67,7 +67,12 @@ class Cradle:
 
     def factor(self):
         '''Parse and Translate a factor'''
-        self.emitLn('MOV EAX, %s     ;eax = INT' % self.getNum())
+        if self.look == '(':
+            self.match('(')
+            self.expression()
+            self.match(')')
+        else:
+            self.emitLn('MOV EAX, %s     ;eax = INT' % self.getNum())
 
     def multiply(self):
         '''Recognize and translate a multiply'''
