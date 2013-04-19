@@ -122,6 +122,10 @@ class Cradle:
 
     def expression(self):
         '''Parse and Translate an expression'''
+        if self.isAddop(self.look):
+            self.emitLn('XOR EAX, EAX   ;unary - or + so first operand is zero')
+        else:
+            self.term()
 
         '''Python doesn't have switch/case.  Using a dictionary
         of lambdas to simulate it.'''
@@ -130,10 +134,12 @@ class Cradle:
                }
         default = lambda: self.expected('Addop')
 
-        self.term()
-        while self.look in ('+', '-'):
+        while self.isAddop(self.look):
             self.emitLn('PUSH EAX       ;put eax on stack (eax holds result of most recently computed term)')
             case.get(self.look, default)() # get() returns a lambda then the () invokes it
+
+    def isAddop(self, c):
+        return c in ('+', '-')
 
     def start(self):
         self.getChar()      # initialization
